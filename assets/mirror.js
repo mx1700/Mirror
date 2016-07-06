@@ -67,7 +67,7 @@ var _template = {
             }
 
             comment = data.comments > 0 ? 
-                '<button class="comment" data-id="'+ data.number +'">View Comments</button>' :
+                '<button class="comment load-comments" data-id="'+ data.number +'">View Comments</button>' :
                 '<a class="comment" href="'+ data.html_url +'#new_comment_field" target="_blank">Add Comment</a>';
 
             issue = '<div id="back">&laquo; back to home</div>'+
@@ -107,6 +107,8 @@ var _template = {
 
 };
 
+
+
 $(function($) {
 
     var issues = '/repos/'+ config.user +'/'+ config.repo +'/issues',
@@ -116,6 +118,15 @@ $(function($) {
         current = 'lists',
         issues_data = [],
         paging = Math.ceil(30 / parseInt(config.per_page));
+
+    function loadComment($buttom) {
+        if ($buttom.length == 0) return;
+        $buttom.text('Loading Comments...').attr('disabled', true);
+        _load(issues +'/'+ $buttom.data('id') +'/comments', {}, function(data) {
+            $buttom.parent().append(_template.comments(data));
+            $buttom.remove()
+        })
+    }
 
     function get_issues() {
         _load(issues, {creator: config.user, page: page, per_page: config.per_page}, function(data, header) {
@@ -161,7 +172,8 @@ $(function($) {
                 $('#post pre code').each(function(i, block) {
                     hljs.highlightBlock(block)
                 });
-                $('html').removeClass('loading')
+                $('html').removeClass('loading');
+                loadComment($('.load-comments'));
             }, function() {
                 location.href = ''
             })
@@ -178,11 +190,7 @@ $(function($) {
         e = $(e.target);
 
         if (e.hasClass('comment') && e[0].tagName == 'BUTTON') {
-            e.text('Loading...').attr('disabled', true);
-            _load(issues +'/'+ e.data('id') +'/comments', {}, function(data) {
-                e.parent().append(_template.comments(data));
-                e.remove()
-            })
+            loadComment(e);
         }
 
         if (e.attr('id') == 'back') {
@@ -212,6 +220,7 @@ $(function($) {
             }
 
             $('#post').html(_template.issue(data));
+            loadComment($('#post').find('.load-comments'));
 
             $('#post pre code').each(function(i, block) {
                 hljs.highlightBlock(block)
@@ -236,5 +245,5 @@ $(function($) {
             }, 0)
         }
     });
-    
+
 });
