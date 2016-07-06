@@ -16,7 +16,7 @@ var _load = function(url, data, callback, error) {
         }
     })
 
-}
+};
 
 var _template = {
 
@@ -93,7 +93,7 @@ var _template = {
                        '<a href="'+ data[i].user.html_url +'" target="_blank"><img src="'+ data[i].user.avatar_url +'" /></a>'+
                        '<section>'+
                        '<header>'+
-                       '<a target="_blank" href="'+ data[i].user.login +'">'+ data[i].user.login +'</a>'+
+                       '<a target="_blank" href="'+ data[i].user.html_url +'">'+ data[i].user.login +'</a>'+
                        '<span>commented on '+ data[i].updated_at.split('T')[0] +'</span>'+
                        '</header>'+
                        '<p>'+ marked(data[i].body) +'</p>'+
@@ -105,7 +105,7 @@ var _template = {
         return comments
     }
 
-}
+};
 
 $(function($) {
 
@@ -120,7 +120,7 @@ $(function($) {
     function get_issues() {
         _load(issues, {creator: config.user, page: page, per_page: config.per_page}, function(data, header) {
             if (page % paging === 0) {
-                $('#posts').html(_template.issues(data))
+                $('#posts').html(_template.issues(data));
                 // remove old data
                 issues_data = [];
             } else {
@@ -128,10 +128,10 @@ $(function($) {
             }
 
             // save data
-            issues_data = issues_data.concat(data)
+            issues_data = issues_data.concat(data);
 
             if (header && header.indexOf('rel="next"') > 0) {
-                $('#next').css('display', 'block').removeAttr('disabled').text('More Posts')
+                $('#next').css('display', 'block').removeAttr('disabled').text('More Posts');
                 page ++;
             } else {
                 $('#next').hide()
@@ -142,25 +142,25 @@ $(function($) {
     }
 
     $('#next').on('click', function() {
-        $(this).attr('disabled', true).text('Loading...')
+        $(this).attr('disabled', true).text('Loading...');
         get_issues()
-    })
+    });
 
     if (location.hash) {
         current = 'single';
 
         var issue_id = parseInt(location.hash.split('#')[1]);
         if (issue_id) {
-            $('#switch > div').removeClass('transition')
+            $('#switch > div').removeClass('transition');
             setTimeout(function() {
                 $('#switch').addClass('right')
-            }, 0)
+            }, 0);
 
             _load(issue + issue_id, {}, function(data) {
-                $('#post').html(_template.issue(data))
+                $('#post').html(_template.issue(data));
                 $('#post pre code').each(function(i, block) {
                     hljs.highlightBlock(block)
-                })
+                });
                 $('html').removeClass('loading')
             }, function() {
                 location.href = ''
@@ -168,7 +168,7 @@ $(function($) {
         }
     } else {
         _load(user, {}, function(data) {
-            $('#user').html(_template.user(data))
+            $('#user').html(_template.user(data));
 
             get_issues()
         })
@@ -178,9 +178,9 @@ $(function($) {
         e = $(e.target);
 
         if (e.hasClass('comment') && e[0].tagName == 'BUTTON') {
-            e.text('Loading...').attr('disabled', true)
+            e.text('Loading...').attr('disabled', true);
             _load(issues +'/'+ e.data('id') +'/comments', {}, function(data) {
-                e.parent().append(_template.comments(data))
+                e.parent().append(_template.comments(data));
                 e.remove()
             })
         }
@@ -192,7 +192,7 @@ $(function($) {
                 history.back()
             }
         }
-    })
+    });
 
     $(window).on('hashchange', function() {
         if (current == 'single') {
@@ -211,30 +211,30 @@ $(function($) {
                 }
             }
 
-            $('#post').html(_template.issue(data))
+            $('#post').html(_template.issue(data));
 
             $('#post pre code').each(function(i, block) {
                 hljs.highlightBlock(block)
-            })
+            });
 
-            window.scrollTo(0, 0)
+            window.scrollTo(0, 0);
 
             setTimeout(function() {
-                $('#switch').addClass('right')
+                $('#switch').addClass('right');
                 setTimeout(function() {
                     $('#main').height(window.innerHeight)
                 }, 400)
             }, 0)
         } else {
-            $('#main').css('height', 'auto')
+            $('#main').css('height', 'auto');
 
             setTimeout(function() {
-                $('#switch').removeClass('right')
+                $('#switch').removeClass('right');
                 setTimeout(function() {
                     $('#post').html('')
                 }, 400)
             }, 0)
         }
-    })
-
-})
+    });
+    
+});
